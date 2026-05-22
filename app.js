@@ -103,9 +103,6 @@ function registrarPrestamo() {
         return alert("BLOQUEO: El usuario tiene libros vencidos pendientes");
     }
 
-    if (tieneVencidos) {
-        return alert("BLOQUEO: El usuario tiene libros vencidos pendientes");
-    }
 
     const fechaHoy = new Date();
     const fechaVencimiento = new Date();
