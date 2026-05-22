@@ -137,8 +137,10 @@ function renderizarPrestamos() {
         const vencimiento = new Date(p.fecha_limite);
         
         const diferenciaTiempo = vencimiento - hoy;
-        const diasRestantes = Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24)); 
-
+        
+        const MILISEGUNDOS_POR_DIA = 1000 * 60 * 60 * 24;
+        const diasRestantes = Math.ceil(diferenciaTiempo / MILISEGUNDOS_POR_DIA);
+ 
         let estadoEtiqueta = 'A TIEMPO';
         let estiloEstado = 'border: 1px solid black; color: black; background: white;';
 
