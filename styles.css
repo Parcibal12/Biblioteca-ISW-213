@@ -1,0 +1,82 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body { 
+    font-family: monospace; 
+    background-color: white; 
+    color: black; 
+    padding: 20px;
+    line-height: 1.5;
+}
+
+.layout-container {
+    max-width: 800px; 
+    margin: 0 auto;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: 2px solid black;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+    gap: 15px;
+}
+
+h1 { text-transform: uppercase; letter-spacing: 2px; }
+
+nav { display: flex; gap: 10px; }
+.btn-nav {
+    background: none; border: none; cursor: pointer;
+    font-family: inherit; font-size: 1rem; padding: 5px 10px;
+    border-bottom: 2px solid transparent;
+}
+.btn-nav.active { border-bottom: 2px solid black; font-weight: bold; }
+
+section { margin-bottom: 40px; }
+
+h2 {
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    border-left: 5px solid black;
+    padding-left: 10px;
+}
+
+.form-group { margin-bottom: 15px; }
+
+label { 
+    display: block; font-weight: bold; margin-bottom: 5px; 
+}
+
+input {
+    width: 100%; max-width: 300px; padding: 8px; 
+    border: 1px solid black; font-family: inherit;
+}
+
+button, .btn {
+    padding: 8px 16px; border: 2px solid black; 
+    background-color: white; color: black;
+    cursor: pointer; font-weight: bold; font-family: inherit;
+    transition: background-color 0.2s;
+}
+button:hover { background-color: #f0f0f0; }
+
+.card {
+    border: 1px solid black;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-info h3 { font-size: 1rem; margin-bottom: 5px; }
+.card-info p { margin: 2px 0; font-size: 0.85rem; color: #333; }
+
+.badge {
+    font-weight: bold; text-transform: uppercase;
+    border: 1px solid black; padding: 2px 6px; font-size: 0.7rem;
+    background: black; color: white;
+}
+.badge-disponible { background: white; color: black; }
