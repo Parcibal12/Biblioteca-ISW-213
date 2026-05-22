@@ -103,7 +103,8 @@ function registrarPrestamo() {
 
     const fechaHoy = new Date();
     const fechaVencimiento = new Date();
-    fechaVencimiento.setDate(fechaHoy.getDate() + 7);
+    const DIAS_PERMITIDOS_PRESTAMO = 7;
+    fechaVencimiento.setDate(fechaHoy.getDate() + DIAS_PERMITIDOS_PRESTAMO);
 
     prestamos.push({
         id: contadorIdPrestamo++,
