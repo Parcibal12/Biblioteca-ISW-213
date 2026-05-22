@@ -74,6 +74,17 @@ function buscarLibro() {
     renderizarCatalogo(texto);
 }
 
+function usuarioTieneVencidos(idUsuario, listaPrestamos) {
+    return listaPrestamos.some(p => {
+        if (p.usuario_id === idUsuario) {
+            const hoy = new Date();
+            const vencimiento = new Date(p.fecha_limite);
+            return vencimiento < hoy;
+        }
+        return false;
+    });
+}
+
 function registrarPrestamo() {
     const idUsuario = parseInt(document.getElementById('input-usuario').value);
     const idLibro = parseInt(document.getElementById('input-libro').value);
@@ -88,14 +99,9 @@ function registrarPrestamo() {
     
     if (libro.estado === 'prestado') return alert("ERROR: El libro ya está prestado");
 
-    const tieneVencidos = prestamos.some(p => {
-        if (p.usuario_id === idUsuario) {
-            const hoy = new Date();
-            const vencimiento = new Date(p.fecha_limite);
-            return vencimiento < hoy;
-        }
-        return false;
-    });
+    if (usuarioTieneVencidos(idUsuario, prestamos)) {
+        return alert("BLOQUEO: El usuario tiene libros vencidos pendientes");
+    }
 
     if (tieneVencidos) {
         return alert("BLOQUEO: El usuario tiene libros vencidos pendientes");
