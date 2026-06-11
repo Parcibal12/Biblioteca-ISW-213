@@ -45,11 +45,36 @@ export function reservarLibro(usuario, libro, listaEspera) {
             listaEspera.push({
                 usuario_id: usuario.id,
                 libro_id: libro.id
-                
+
             });
             return true;
 
         }
     }
     return false;
+}
+
+export function calcularMultas(prestamosActivos, usuarios, fechaActualStr, montoPorDia) {
+    const fechaActual = new Date(fechaActualStr);
+
+    prestamosActivos.forEach(prestamo => {
+        const fechaLimite = new Date(prestamo.fecha_limite);
+        
+        if (fechaActual > fechaLimite) {
+
+            const diferenciaMs = fechaActual - fechaLimite;
+            const diasRetraso = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
+            
+            if (diasRetraso > 0) {
+                const usuario = usuarios.find(u => u.id === prestamo.usuario_id);
+                if (usuario) {
+                    usuario.deuda += (diasRetraso * montoPorDia);
+
+                }
+            }
+        }
+        
+    });
+    
+    return true;
 }
