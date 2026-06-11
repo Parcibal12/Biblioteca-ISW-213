@@ -1,4 +1,4 @@
-import { registrarPrestamo } from './logicaBiblioteca.js';
+import { registrarPrestamo, procesarDevolucion } from './logicaBiblioteca.js';
 
 describe('HU-02: Registrar el préstamo de un libro físico', () => {
     const fechaActual = '2026-05-23T10:00:00'; 
@@ -38,5 +38,19 @@ describe('HU-02: Registrar el préstamo de un libro físico', () => {
     test('Regla de negocio: Debe lanzar error si faltan datos obligatorios', () => {
         expect(() => registrarPrestamo(null, { id: 102 }, [], fechaActual)).toThrow('Usuario inexistente');
         expect(() => registrarPrestamo({ id: 1 }, null, [], fechaActual)).toThrow('Libro inexistente');
+    });
+});
+
+
+describe('HU-6: Registrar la devolución de un libro', () => {
+    test('CA1: Debe actualizar el estado del libro a disponible al devolver', () => {
+        const prestamos = [{ id: 1, libro_id: 101 }];
+        const libros = [{ id: 101, estado: 'prestado' }];
+
+        const resultado = procesarDevolucion(1, prestamos, libros);
+
+        expect(resultado).toBe(true);
+        expect(libros[0].estado).toBe('disponible');
+        expect(prestamos.length).toBe(0);
     });
 });
