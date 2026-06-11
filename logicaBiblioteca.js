@@ -16,3 +16,19 @@ export function registrarPrestamo(usuario, libro, prestamosActivos, fechaActual)
     libro.estado = 'prestado';
     return true;
 }
+
+
+
+export function procesarDevolucion(idPrestamo, prestamosActivos, catalogoLibros) {
+    const index = prestamosActivos.findIndex(p => p.id === idPrestamo);
+    if (index === -1) return false;
+    const idLibro = prestamosActivos[index].libro_id;
+    prestamosActivos.splice(index, 1);
+
+    const libro = catalogoLibros.find(l => l.id === idLibro);
+    if (libro) {
+        libro.estado = 'disponible';
+    }
+    return true;
+    
+}
