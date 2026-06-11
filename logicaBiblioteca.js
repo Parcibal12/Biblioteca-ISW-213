@@ -33,3 +33,17 @@ export function procesarDevolucion(idPrestamo, prestamosActivos, catalogoLibros)
     return false;
 
 }
+
+
+export function reservarLibro(usuario, libro, listaEspera) {
+    if (libro.estado === 'prestado') {
+        listaEspera.push({
+            usuario_id: usuario.id,
+            libro_id: libro.id
+            
+        });
+        return true;
+
+    }
+    return false;
+}
