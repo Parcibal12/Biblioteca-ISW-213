@@ -37,13 +37,19 @@ export function procesarDevolucion(idPrestamo, prestamosActivos, catalogoLibros)
 
 export function reservarLibro(usuario, libro, listaEspera) {
     if (libro.estado === 'prestado') {
-        listaEspera.push({
-            usuario_id: usuario.id,
-            libro_id: libro.id
-            
-        });
-        return true;
+        const reservaExistente = listaEspera.some(reserva => 
+            reserva.usuario_id === usuario.id && reserva.libro_id === libro.id
+        );
 
+        if (!reservaExistente) {
+            listaEspera.push({
+                usuario_id: usuario.id,
+                libro_id: libro.id
+                
+            });
+            return true;
+
+        }
     }
     return false;
 }
