@@ -1,4 +1,4 @@
-import { registrarPrestamo, procesarDevolucion, reservarLibro } from './logicaBiblioteca.js';
+import { registrarPrestamo, procesarDevolucion, reservarLibro, calcularMultas } from './logicaBiblioteca.js';
 
 describe('HU-02: Registrar el préstamo de un libro físico', () => {
     const fechaActual = '2026-05-23T10:00:00'; 
@@ -68,5 +68,20 @@ describe('HU-08: Reservar un libro prestado', () => {
         expect(listaEspera.length).toBe(1);
         expect(listaEspera[0].usuario_id).toBe(3);
         expect(listaEspera[0].libro_id).toBe(101);
+    });
+});
+
+describe('HU-07: Aplicar multas por retraso', () => {
+    test('CA1: Debe sumar a la deuda del usuario si el préstamo está vencido', () => {
+        const usuarios = [{ id: 1, nombre: 'Jeanpol', deuda: 0 }];
+        const prestamos = [
+            { usuario_id: 1, libro_id: 101, fecha_limite: '2026-06-01T00:00:00' }
+        ];
+        const fechaActual = '2026-06-05T00:00:00'; 
+        const montoPorDia = 5; 
+        const resultado = calcularMultas(prestamos, usuarios, fechaActual, montoPorDia);
+        expect(resultado).toBe(true);
+        expect(usuarios[0].deuda).toBe(20); 
+        
     });
 });
