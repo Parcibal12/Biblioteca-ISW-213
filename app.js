@@ -1,10 +1,10 @@
-const usuarios = [
+export const usuarios = [
     { id: 1, nombre: 'Jeanpol', deuda: 0 },
     { id: 2, nombre: 'Enrique', deuda: 0 },
     { id: 3, nombre: 'Fernando', deuda: 0 }
 ];
 
-const libros = [
+export const libros = [
     { id: 101, titulo: 'Harry Potter y la piedra filosofal', autor: 'J.K. Rowling', estado: 'prestado' },
     { id: 102, titulo: 'La rebelión en la granja', autor: 'George Orwell', estado: 'disponible' },
     { id: 103, titulo: '1984', autor: 'George Orwell', estado: 'disponible' },
@@ -12,7 +12,7 @@ const libros = [
     { id: 105, titulo: 'El código Da Vinci', autor: 'Dan Brown', estado: 'disponible' }
 ];
 
-let prestamos = [
+export let prestamos = [
     {
         id: 1,
         usuario_id: 1,
@@ -23,61 +23,13 @@ let prestamos = [
     }
 ];
 
-let contadorIdPrestamo = 2;
+export let contadorIdPrestamo = 2;
 
-function mostrarVista(vista) {
-    document.getElementById('vista-catalogo').style.display = 'none';
-    document.getElementById('vista-gestion').style.display = 'none';
-    document.getElementById('btn-catalogo').classList.remove('active');
-    document.getElementById('btn-gestion').classList.remove('active');
 
-    document.getElementById(`vista-${vista}`).style.display = 'block';
-    document.getElementById(`btn-${vista}`).classList.add('active');
-
-    if(vista === 'catalogo') renderizarCatalogo();
-    if(vista === 'gestion') renderizarPrestamos();
-}
-
-function renderizarCatalogo(filtro = '') {
-    const contenedor = document.getElementById('resultados-catalogo');
-    contenedor.innerHTML = '';
-
-    const librosFiltrados = libros.filter(libro => {
-        const texto = filtro.toLowerCase();
-        return libro.titulo.toLowerCase().includes(texto) || 
-               libro.autor.toLowerCase().includes(texto);
-    });
-
-    if (librosFiltrados.length === 0) {
-        contenedor.innerHTML = '<p>No se encontraron libros</p>';
-        return;
-    }
-
-    librosFiltrados.forEach(libro => {
-        const claseBadge = libro.estado === 'disponible' ? 'badge-disponible' : 'badge';
-        contenedor.innerHTML += `
-            <div class="card">
-                <div class="card-info">
-                    <h3>${libro.titulo} <span style="font-weight:normal; font-size:0.8em;">(ID: ${libro.id})</span></h3>
-                    <p>Autor: ${libro.autor}</p>
-                </div>
-                <div>
-                    <span class="badge ${claseBadge}">${libro.estado}</span>
-                </div>
-            </div>
-        `;
-    });
-}
-
-function buscarLibro() {
-    const texto = document.getElementById('busqueda-libro').value;
-    renderizarCatalogo(texto);
-}
-
-function usuarioTieneVencidos(idUsuario, listaPrestamos) {
+export function usuarioTieneVencidos(idUsuario, listaPrestamos) {
+    const hoy = new Date();
     return listaPrestamos.some(p => {
         if (p.usuario_id === idUsuario) {
-            const hoy = new Date();
             const vencimiento = new Date(p.fecha_limite);
             return vencimiento < hoy;
         }
@@ -85,104 +37,51 @@ function usuarioTieneVencidos(idUsuario, listaPrestamos) {
     });
 }
 
-function registrarPrestamo() {
-    const idUsuario = parseInt(document.getElementById('input-usuario').value);
-    const idLibro = parseInt(document.getElementById('input-libro').value);
+export function registrarPrestamo(idUsuario, idLibro, listaUsuarios, listaLibros, listaPrestamos) {
+    const usuario = listaUsuarios.find(u => u.id === idUsuario);
+    const libro = listaLibros.find(l => l.id === idLibro);
 
-    if (!idUsuario || !idLibro) return alert("Ingresa ambos IDs");
-
-    const usuario = usuarios.find(u => u.id === idUsuario);
-    const libro = libros.find(l => l.id === idLibro);
-
-    if (!usuario) return alert("Usuario no encontrado");
-    if (!libro) return alert("Libro no encontrado.");
-    
-    if (libro.estado === 'prestado') return alert("ERROR: El libro ya está prestado");
-
-    if (usuarioTieneVencidos(idUsuario, prestamos)) {
-        return alert("BLOQUEO: El usuario tiene libros vencidos pendientes");
-    }
+    if (!usuario) throw new Error("Usuario no encontrado");
+    if (!libro) throw new Error("Libro no encontrado.");
+    if (libro.estado === 'prestado') throw new Error("ERROR: El libro ya está prestado");
+    if (usuarioTieneVencidos(idUsuario, listaPrestamos)) throw new Error("BLOQUEO: El usuario tiene libros vencidos");
 
 
-    const fechaHoy = new Date();
+
     const fechaVencimiento = new Date();
-    const DIAS_PERMITIDOS_PRESTAMO = 7;
-    fechaVencimiento.setDate(fechaHoy.getDate() + DIAS_PERMITIDOS_PRESTAMO);
-
-    prestamos.push({
+    const DIAS_PRESTAMO_PERMITIDOS = 7;
+    fechaVencimiento.setDate(fechaVencimiento.getDate() + DIAS_PRESTAMO_PERMITIDOS);
+    
+    const nuevoPrestamo = {
         id: contadorIdPrestamo++,
         usuario_id: usuario.id,
         libro_id: libro.id,
-        fecha_limite: fechaVencimiento.toISOString().split('T')[0], 
+        fecha_limite: fechaVencimiento.toISOString().split('T')[0],
         usuario_nombre: usuario.nombre,
         libro_titulo: libro.titulo
-    });
-
-    libro.estado = 'prestado';
-
-    alert(`Préstamo registrado con éxito, vence el: ${fechaVencimiento.toISOString().split('T')[0]}`);
+    };
     
-    document.getElementById('input-usuario').value = '';
-    document.getElementById('input-libro').value = '';
-    renderizarPrestamos();
+    listaPrestamos.push(nuevoPrestamo);
+    libro.estado = 'prestado';
+    return nuevoPrestamo;
 }
 
-function renderizarPrestamos() {
-    const contenedor = document.getElementById('lista-prestamos');
+
+export function renderizarCatalogo(filtro = '') {
+    const contenedor = document.getElementById('resultados-catalogo');
+    if (!contenedor) return;
+    
     contenedor.innerHTML = '';
+    const librosFiltrados = libros.filter(l => 
+        l.titulo.toLowerCase().includes(filtro.toLowerCase()) || 
+        l.autor.toLowerCase().includes(filtro.toLowerCase())
+    );
 
-    if(prestamos.length === 0) {
-        contenedor.innerHTML = '<p style="text-align:center;">no hay préstamos activos</p>';
-        return;
-    }
-
-    prestamos.forEach(p => {
-        const hoy = new Date();
-        const vencimiento = new Date(p.fecha_limite);
-        
-        const diferenciaTiempo = vencimiento - hoy;
-        
-        const MILISEGUNDOS_POR_DIA = 1000 * 60 * 60 * 24;
-        const diasRestantes = Math.ceil(diferenciaTiempo / MILISEGUNDOS_POR_DIA);
- 
-        let estadoEtiqueta = 'A TIEMPO';
-        let estiloEstado = 'border: 1px solid black; color: black; background: white;';
-
-        if (diasRestantes < 0) {
-            estadoEtiqueta = 'VENCIDO';
-            estiloEstado = 'background-color: black; color: white;';
-        } else if (diasRestantes <= 2) {
-            estadoEtiqueta = 'POR VENCER';
-        }
-
-        contenedor.innerHTML += `
-            <div class="card">
-                <div class="card-info">
-                    <h3>${p.libro_titulo}</h3>
-                    <p><strong>Usuario:</strong> ${p.usuario_nombre}</p>
-                    <p><strong>Vence:</strong> ${p.fecha_limite} (${diasRestantes} días)</p>
-                    <div style="margin-top:5px;">
-                        <span class="badge" style="${estiloEstado}">${estadoEtiqueta}</span>
-                    </div>
-                </div>
-                <button onclick="devolverLibro(${p.id}, ${p.libro_id})" class="btn" style="font-size:0.8rem;">
-                    Devolver
-                </button>
-            </div>
-        `;
+    librosFiltrados.forEach(libro => {
+        contenedor.innerHTML += `<div class="card"><h3>${libro.titulo}</h3><span class="badge">${libro.estado}</span></div>`;
     });
 }
 
-function devolverLibro(idPrestamo, idLibro) {
-    if(!confirm("¿Confirmar recepción del libro?")) return;
-
-    prestamos = prestamos.filter(p => p.id !== idPrestamo);
-
-    const libro = libros.find(l => l.id === idLibro);
-    if (libro) libro.estado = 'disponible';
-
-    alert("Devolución registradat stock actualizado");
-    renderizarPrestamos();
-}
-
-renderizarCatalogo();
+document.addEventListener('DOMContentLoaded', () => {
+    if(document.getElementById('resultados-catalogo')) renderizarCatalogo();
+});
