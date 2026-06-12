@@ -77,9 +77,11 @@ export function renderizarCatalogo(filtro = '') {
         l.autor.toLowerCase().includes(filtro.toLowerCase())
     );
 
-    librosFiltrados.forEach(libro => {
-        contenedor.innerHTML += `<div class="card"><h3>${libro.titulo}</h3><span class="badge">${libro.estado}</span></div>`;
-    });
+    const htmlLibros = librosFiltrados.map(libro => 
+        `<div class="card"><h3>${libro.titulo}</h3><span class="badge">${libro.estado}</span></div>`
+    ).join('');
+    
+    contenedor.innerHTML = htmlLibros;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
