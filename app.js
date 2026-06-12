@@ -28,13 +28,11 @@ export let contadorIdPrestamo = 2;
 
 export function usuarioTieneVencidos(idUsuario, listaPrestamos) {
     const hoy = new Date();
-    return listaPrestamos.some(p => {
-        if (p.usuario_id === idUsuario) {
-            const vencimiento = new Date(p.fecha_limite);
-            return vencimiento < hoy;
-        }
-        return false;
-    });
+    return listaPrestamos.some(p => 
+        p.usuario_id === idUsuario && new Date(p.fecha_limite) < hoy
+
+        
+    );
 }
 
 export function registrarPrestamo(idUsuario, idLibro, listaUsuarios, listaLibros, listaPrestamos) {
