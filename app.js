@@ -25,13 +25,10 @@ export let prestamos = [
 
 export let contadorIdPrestamo = 2;
 
-
 export function usuarioTieneVencidos(idUsuario, listaPrestamos) {
     const hoy = new Date();
     return listaPrestamos.some(p => 
         p.usuario_id === idUsuario && new Date(p.fecha_limite) < hoy
-
-        
     );
 }
 
@@ -43,8 +40,6 @@ export function registrarPrestamo(idUsuario, idLibro, listaUsuarios, listaLibros
     if (!libro) throw new Error("Libro no encontrado.");
     if (libro.estado === 'prestado') throw new Error("ERROR: El libro ya está prestado");
     if (usuarioTieneVencidos(idUsuario, listaPrestamos)) throw new Error("BLOQUEO: El usuario tiene libros vencidos");
-
-
 
     const fechaVencimiento = new Date();
     const DIAS_PRESTAMO_PERMITIDOS = 7;
@@ -63,7 +58,6 @@ export function registrarPrestamo(idUsuario, idLibro, listaUsuarios, listaLibros
     libro.estado = 'prestado';
     return nuevoPrestamo;
 }
-
 
 export function renderizarCatalogo(filtro = '') {
     const contenedor = document.getElementById('resultados-catalogo');
@@ -85,3 +79,27 @@ export function renderizarCatalogo(filtro = '') {
 document.addEventListener('DOMContentLoaded', () => {
     if(document.getElementById('resultados-catalogo')) renderizarCatalogo();
 });
+
+window.mostrarVista = function(vista) {
+    document.getElementById('vista-catalogo').style.display = vista === 'catalogo' ? 'block' : 'none';
+    document.getElementById('vista-gestion').style.display = vista === 'gestion' ? 'block' : 'none';
+    document.getElementById('btn-catalogo').classList.toggle('active', vista === 'catalogo');
+    document.getElementById('btn-gestion').classList.toggle('active', vista === 'gestion');
+};
+
+window.buscarLibro = function() {
+    const filtro = document.getElementById('busqueda-libro').value;
+    renderizarCatalogo(filtro);
+};
+
+window.registrarPrestamoBtn = function() {
+    const idUsuario = parseInt(document.getElementById('input-usuario').value);
+    const idLibro = parseInt(document.getElementById('input-libro').value);
+    try {
+        registrarPrestamo(idUsuario, idLibro, usuarios, libros, prestamos);
+        renderizarCatalogo();
+        alert("Préstamo registrado con éxito");
+    } catch (error) {
+        alert(error.message);
+    }
+};
